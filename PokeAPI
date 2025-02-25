@@ -1,0 +1,273 @@
+openapi: 3.0.3
+info:
+  title: PokeAPI Swagger - OpenAPI 3.0
+  description: PokeAPI docs
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080/api/v1
+tags:
+  - name: pokemon
+    description: Informacion acerca de los pokemones
+paths:
+  /pokemon/{name}:
+    get:
+      tags:
+        - pokemon
+      summary: Encuentra pokemon por nombre
+      description: Obtiene la informacion de un pokemon
+      operationId: getPokemon
+      parameters:
+        - name: name
+          in: path
+          description: Nombre del pokemon a buscar
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'          
+        '400':
+          description: Nombre de pokemon invalido
+        '404':
+          description: Pokemon no encontrado
+  /pokemon/{pokemonId}:
+    get:
+      tags:
+        - pokemon
+      summary: Encuentra pokemon por ID
+      description: Obtiene la informacion del pokemon
+      operationId: getPokemonById
+      parameters:
+        - name: pokemonId
+          in: path
+          description: ID del pokemon a buscar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+        '400':
+          description: Nombre de pokemon invalido
+        '404':
+          description: Pokemon no encontrado
+        '406':
+          description: ID de pokemon invalido
+components:
+  schemas:
+    Pokemon:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          description: Pokemon name
+          example: Pikachu
+        base_experience:
+          type: integer
+          format: int64
+          example: 113
+        height:
+          type: integer
+          format: int64
+          example: 6
+        is_default: 
+          type: boolean
+          example: true
+        order:
+          type: integer
+          format: int64
+          example: 56
+        weight:
+          type: integer
+          format: int64
+          example: 75
+        abilities:
+          $ref: '#/components/schemas/Abilities'
+        forms:
+          $ref: '#/components/schemas/PokemonForm'
+        past_types:
+          $ref: '#/components/schemas/PastTypes'
+    PastTypes:
+      type: object
+      properties:
+        generation:
+          $ref: '#/components/schemas/Generation'
+    Generation:
+    PokemonForm:
+      type: object 
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: Pikachu
+        order:
+          type: integer
+          format: int64
+          example: 56
+        form_order:
+          type: integer
+          format: int64
+          example: 1
+        is_default:
+          type: boolean
+          example: true
+        is_battle_only:
+          type: boolean
+          example: false
+        is_mega:
+          type: boolean
+          example: false
+        form_name:
+          type: string
+          example: Pikachu
+        pokemon:
+          $ref: '#/components/schemas/Pokemon'
+    PokemonFormType:
+      type: object
+      properties:
+        slot: 
+          type: integer
+          format: int64
+          example: 1
+        type: 
+          $ref: '#/components/schemas/Type'
+    Type:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: electric
+        damage_relations:
+          $ref: '#/components/schemas/TypeRelations'
+        past_damage_relations:
+          $ref: '#/components/schemas/TypeRelationsPast'
+    TypeRelationsPast:
+      type: object
+      properties:
+        generation: 
+          $ref: '#/components/schemas/Generation'
+    Generation:
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: generation-i
+        abilities:
+          $ref: '#/components/schemas/Ability'
+        names:
+          $ref: '#/components/schemas/Name'
+    Name:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "generation-i"
+        language:
+          $ref: '#/components/schemas/Language'
+          description: The language the name is in
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "en" 
+        official:
+          type: boolean
+          example: true
+        iso639:
+          type: string
+          example: "en"
+        iso3166:
+          type: string
+          example: "US"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'  
+    TypeRelations:
+      type: object
+      properties:
+        no_damage_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+        half_damage_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+        double_damage_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+        no_damage_from:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+        half_damage_from:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+        double_damage_from:
+          type: array
+          items:
+            $ref: '#/components/schemas/Type'
+    Abilities:
+      type: object
+      properties:
+        is_hidden: 
+          type: boolean
+          example: true
+        slot:
+          type: integer
+          format: int64
+          example: 3
+        ability:
+          $ref: '#/components/schemas/Pokemon'
+    Ability:
+      type: object
+      properties:
+        name: 
+          type: string
+          example: "friend-guard"
+        url:
+          type: string
+          example: "https://pokeapi.co/api/v2/ability/132/"
+    
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string

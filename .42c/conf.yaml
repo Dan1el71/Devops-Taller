@@ -1,0 +1,3 @@
+apis:
+  PokeAPI:
+    alias: pokeapi-swagger-openapi-3.0

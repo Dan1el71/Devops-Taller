@@ -3,25 +3,30 @@ info:
   title: PokeAPI Swagger - OpenAPI 3.0
   description: PokeAPI docs
   version: 1.0.0
+security:
+  - regularSecurity: []
 servers:
   - url: https://localhost:8080/api/v1
 tags:
   - name: pokemon
     description: Informacion acerca de los pokemones
 paths:
-  /pokemon/{name}:
+  /pokemon/{parameter}:
     get:
       tags:
         - pokemon
-      summary: Encuentra pokemon por nombre
+      summary: Encuentra pokemon por nombre o ID
       description: Obtiene la informacion de un pokemon
       operationId: getPokemon
       parameters:
-        - name: name
+        - name: parameter
+          example: pikachu
           in: path
-          description: Nombre del pokemon a buscar
+          description: Nombre o ID del pokemon a buscar
           required: true
           schema:
+            maxLength: 10
+            pattern: '^[a-zA-Z0-9]*$'
             type: string
       responses:
         '200':
@@ -29,40 +34,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pokemon'          
-        '400':
-          description: Nombre de pokemon invalido
-        '404':
-          description: Pokemon no encontrado
-  /pokemon/{pokemonId}:
-    get:
-      tags:
-        - pokemon
-      summary: Encuentra pokemon por ID
-      description: Obtiene la informacion del pokemon
-      operationId: getPokemonById
-      parameters:
-        - name: pokemonId
-          in: path
-          description: ID del pokemon a buscar
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Operacion correcta
+                $ref: '#/components/schemas/ApiResponse'          
+        '400': 
+          description: Invalid ID or Name supplied
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pokemon'
-        '400':
-          description: Nombre de pokemon invalido
+                $ref: '#/components/schemas/ApiResponse'
         '404':
-          description: Pokemon no encontrado
+          description: Pokemon not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         '406':
-          description: ID de pokemon invalido
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 components:
+  responses:
+    ApiResponse:
+      description: Respuesta generica
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
   schemas:
     Pokemon:
       type: object
@@ -105,7 +121,6 @@ components:
       properties:
         generation:
           $ref: '#/components/schemas/Generation'
-    Generation:
     PokemonForm:
       type: object 
       properties:
@@ -145,7 +160,7 @@ components:
           type: integer
           format: int64
           example: 1
-        type: 
+        type:
           $ref: '#/components/schemas/Type'
     Type:
       type: object
@@ -188,7 +203,6 @@ components:
           example: "generation-i"
         language:
           $ref: '#/components/schemas/Language'
-          description: The language the name is in
     Language:
       type: object
       properties:
@@ -250,7 +264,7 @@ components:
           format: int64
           example: 3
         ability:
-          $ref: '#/components/schemas/Pokemon'
+          $ref: '#/components/schemas/Ability'
     Ability:
       type: object
       properties:
@@ -260,7 +274,6 @@ components:
         url:
           type: string
           example: "https://pokeapi.co/api/v2/ability/132/"
-    
     ApiResponse:
       type: object
       properties:
@@ -268,6 +281,14 @@ components:
           type: integer
           format: int32
         type:
+          maxLength: 10
+          pattern: '^[a-zA-Z0-9]*$'
           type: string
         message:
+          maxLength: 10
+          pattern: '^[a-zA-Z0-9]*$'
           type: string
+  securitySchemes:
+    regularSecurity:
+      type: http
+      scheme: basic

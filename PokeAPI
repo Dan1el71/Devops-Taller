@@ -4,9 +4,12 @@ info:
   description: PokeAPI docs
   version: 1.0.0
 security:
-  - regularSecurity: []
+  - OAuth2:
+      - write
+      - read
 servers:
   - url: https://localhost:8080/api/v1
+    description: Localhost server
 tags:
   - name: pokemon
     description: Informacion acerca de los pokemones
@@ -34,51 +37,72 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'          
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 200
+                type: "success"
+                message: "Pokemon found"
         '400': 
           description: Invalid ID or Name supplied
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 400
+                type: "error"
+                message: "Invalid ID or Name supplied"
         '404':
           description: Pokemon not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 404
+                type: "error"
+                message: "Pokemon not found"
         '406':
           description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 406
+                type: "error"
+                message: "Invalid input"
         '429':
           description: Too many requests
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 429
+                type: "error"
+                message: "Too many requests"
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 500
+                type: "error"
+                message: "Internal server error"
         'default':
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: 0
+                type: "error"
+                message: "Unexpected error"
 components:
-  responses:
-    ApiResponse:
-      description: Respuesta generica
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiResponse'
   schemas:
     Pokemon:
       type: object
@@ -114,8 +138,915 @@ components:
           $ref: '#/components/schemas/Abilities'
         forms:
           $ref: '#/components/schemas/PokemonForm'
+        game_indices:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionGameIndex'
+        held_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonHeldItem'
+        location_area_encounters:
+          type: string
+          example: "https://pokeapi.co/api/v2/pokemon/10/encounters"
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonMove'
         past_types:
-          $ref: '#/components/schemas/PastTypes'
+          $ref: '#/components/schemas/PastTypePast'
+        sprites:
+          $ref: '#/components/schemas/PokemonSprites'
+        cries:
+          $ref: '#/components/schemas/PokemonCries'
+        species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonStat'
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonType'
+    PokemonType:
+      type: object
+      properties:
+        slot:
+          type: integer
+          format: int64
+          example: 1
+        type:
+          $ref: '#/components/schemas/Type'
+    MoveStatAffectSets:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatAffect'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatAffect'
+    MoveStatAffect: 
+      type: object
+      properties:
+        change:
+          type: integer
+          format: int64
+          example: 10
+        move:
+          $ref: '#/components/schemas/Move'
+    Stat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "hp"
+        game_index:
+          type: integer
+          format: int64
+        is_battle_only:
+          type: boolean
+          example: false
+        affecting_moves:
+          $ref: '#/components/schemas/MoveStatAffectSets'
+        affecting_natures:
+          $ref: '#/components/schemas/NatureStatAffectSets'
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Characteristic'
+        move_damage_class:
+          $ref: '#/components/schemas/MoveDamageClass'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'      
+    PokemonStat:
+      type: object
+      properties:
+        stat:
+          $ref: '#/components/schemas/Stat'
+        effort:
+          type: integer
+          format: int64
+        base_stat:
+          type: integer
+          format: int64
+    PokemonHeldItem:
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Item'
+        version_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonHeldItemVersion'
+    PokemonMove:
+      type: object
+      properties:
+        move:
+          $ref: '#/components/schemas/Move'
+        version_group_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonMoveVersion'
+    PastTypePast:
+      type: object
+      properties:
+        generation:
+          $ref: '#/components/schemas/Generation'
+    PokemonSprites:
+      type: object
+      properties:
+        front_default:
+          type: string
+        front_shiny:
+          type: string
+        front_female:
+          type: string
+        front_shiny_female:
+          type: string
+        back_deafult:
+          type: string
+        back_shiny:
+          type: string
+        back_female:
+          type: string
+        back_shiny_female:
+          type: string
+    PokemonCries:
+      type: object
+      properties:
+        cry:
+          type: string
+          example: "https://pokeapi.co/api/v2/pokemon/10/"
+    PokemonMoveVersion:
+      type: object
+      properties:
+        move_learn_method:
+          $ref: '#/components/schemas/MoveLearnMethod'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+        level_learned_at:
+          type: integer
+          format: int64
+          example: 10  
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "master-ball"
+        cost:
+          type: integer
+          format: int64
+          example: 100
+        fling_power:
+          type: integer
+          format: int64
+          example: 10
+        fling_effect:
+          $ref: '#/components/schemas/ItemFlingEffect'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemAttribute'
+        category:
+          $ref: '#/components/schemas/ItemCategory'
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerboseEffect'
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionGroupFlavorText'
+        game_indices:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenerationGameIndex'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        sprites:
+          $ref: '#/components/schemas/ItemSprites'
+    VersionGroupFlavorText:
+      type: object
+      properties:
+        text:
+          type: string
+          example: "fling-effect"
+        language:
+          $ref: '#/components/schemas/Language'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    VerboseEffect: 
+      type: object
+      properties:
+        effect:
+          type: string
+          example: "fling-effect"
+        short_effect:
+          type: string
+          example: "fling-effect"
+        language:
+          $ref: '#/components/schemas/Language'
+    ItemCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "master-ball"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pocket:
+          $ref: '#/components/schemas/ItemPocket'
+    ItemPocket:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "pokeball"
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemCategory'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+    ItemAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "holdable"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+    ItemFlingEffect:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "fling-effect"
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Effect'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+    Effect: 
+      type: object
+      properties:
+        effect:
+          type: string
+          example: "fling-effect"
+    ItemSprites:
+      type: object
+      properties:
+        default:
+          type: string
+          example: "https://pokeapi.co/api/v2/item/10/"
+    VersionGameIndex:
+      type: object
+      properties:
+        game_index:
+          type: integer
+          format: int64
+        version:
+          $ref: '#/components/schemas/Version'
+    Version:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "red"
+        names:
+          $ref: '#/components/schemas/Name'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    VersionGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "red-blue"
+        order:
+          type: integer
+          format: int64
+        generation:
+          $ref: '#/components/schemas/Generation'
+        move_learn_methods:
+          type: array
+          items: 
+            $ref: '#/components/schemas/MoveLearnMethod'
+        pokedexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pokedex'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Region'
+        version:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+    Pokedex:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "national"
+        is_main_series:
+          type: boolean
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonEntry'
+        region:
+          $ref: '#/components/schemas/Region'
+        version_group:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionGroup'
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "kanto"
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        main_generation:
+          $ref: '#/components/schemas/Generation'
+        pokedexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pokedex'
+        version_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionGroup'
+    Location: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "pallet-town"
+        region:
+          $ref: '#/components/schemas/Region'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        game_indices:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenerationGameIndex'
+        areas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationArea'
+    LocationArea:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "pallet-town"
+        game_index:
+          type: integer
+          format: int64
+        encounter_method_rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncounterMethodRate'
+        location:
+          $ref: '#/components/schemas/Location'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_encounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonEncounter'
+    EncounterMethodRate:
+      type: object
+      properties:
+        encounter_method:
+          $ref: '#/components/schemas/EncounterMethod'
+        version_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionEncounterDetail'
+    PokemonEncounter:
+      type: object
+      properties:
+        pokemon:
+          $ref: '#/components/schemas/Pokemon'
+        version_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionEncounterDetail'
+    VersionEncounterDetail:
+      type: object
+      properties:
+        rate:
+          type: integer
+          format: int64
+          example: 10
+        version:
+          $ref: '#/components/schemas/Version'
+    EncounterMethod:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "walk"
+        order:
+          type: integer
+          format: int64
+          example: 1
+    GenerationGameIndex: 
+      type: object
+      properties:
+        game_index:
+          type: integer
+          format: int64
+        generation:
+          $ref: '#/components/schemas/Generation'
+    PokemonEntry:
+      type: object
+      properties:
+        entry_number:
+          type: integer
+          format: int64
+        pokemon_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+    PokemonSpecies:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "pikachu"
+        order:
+          type: integer
+          format: int64
+        gender_rate:
+          type: integer
+          format: int32
+        capture_rate:
+          type: integer
+          format: int32
+        base_happiness:
+          type: integer
+          format: int32
+        is_baby:
+          type: boolean
+        is_legendary:
+          type: boolean
+        is_mithycal:
+          type: boolean
+        hatch_counter:
+          type: integer
+          format: int32
+        has_gender_differences:
+          type: boolean
+        forms_switchable:
+          type: boolean
+        growth_rate:
+          $ref: '#/components/schemas/GrowthRate'
+        pokedex_numbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpeciesDex'
+        egg_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/EggGroup'
+        color:
+          $ref: '#/components/schemas/PokemonColor'
+        shape:
+          $ref: '#/components/schemas/PokemonShape'
+        evolves_from_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        evolution_chain:
+          $ref: '#/components/schemas/EvolutionChain'
+        habitat:
+          $ref: '#/components/schemas/PokemonHabitat'
+        generation:
+          $ref: '#/components/schemas/Generation'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pal_park_encounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalParkEncounterArea'
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+        description:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        genera:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genus'
+        varieties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpeciesVariety'
+    
+    EvolutionChain: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        baby_trigger_item:
+          $ref: '#/components/schemas/Item'
+        chain: 
+          $ref: '#/components/schemas/ChainLink'
+    ChainLink:
+      type: object
+      properties:
+        is_baby:
+          type: boolean
+          example: true
+        species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        evolution_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvolutionDetail'
+        evolves_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChainLink'
+    PokemonHabitat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "forest"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    EvolutionDetail: 
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Item'
+        trigger:
+          $ref: '#/components/schemas/EvolutionTrigger'
+        gender:
+         type: integer
+         format: int32
+        held_item:
+          $ref: '#/components/schemas/Item'  
+        known_move:
+          $ref: '#/components/schemas/Move'
+        known_move_type:
+          $ref: '#/components/schemas/Type'
+        location:
+          $ref: '#/components/schemas/Location'
+        min_level: 
+          type: integer
+          format: int32
+        min_hapiness:
+          type: integer
+          format: int32
+        min_beauty:
+          type: integer
+          format: int32
+        min_affection:
+          type: integer
+          format: int32
+        needs_overworld_rain:
+          type: boolean
+        party_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        party_type: 
+          $ref: '#/components/schemas/Type'
+        relative_physical_stats:
+          type: integer
+        time_of_day:
+          type: string
+        trade_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        turn_upside_down:
+          type: boolean
+    EvolutionTrigger:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "level-up"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    PokemonShape: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        awesome_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/AwesomeName'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    AwesomeName:
+      type: object
+      properties:
+        awesome_name:
+          type: string
+        language: 
+          $ref: '#/components/schemas/Language'
+    PokemonColor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "red"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    EggGroup: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "monster"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    PalParkEncounterArea:
+      type: object
+      properties:
+        base_score:
+          type: integer
+          format: int32
+          example: 10
+        rate:
+          type: integer
+          format: int32
+          example: 10
+        area:
+          $ref: '#/components/schemas/PalParkArea'
+    PalParkArea:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "forest"
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_encounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalParkEncounterSpecies'
+    PalParkEncounterSpecies:
+      type: object
+      properties:
+        base_score:
+          type: integer
+          format: int32
+          example: 10
+        rate:
+          type: integer
+          format: int32
+          example: 10
+        pokemon_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+    FlavorText:
+      type: object
+      properties:
+        flavor_text:
+          type: string
+          example: "level-up"
+        language:
+          $ref: '#/components/schemas/Language'
+        version:
+          $ref: '#/components/schemas/Version'
+    Genus:
+      type: object
+      properties:
+        genus:
+          type: string
+          example: "mouse"
+        language:
+          $ref: '#/components/schemas/Language'
+    PokemonSpeciesVariety:
+      type: object
+      properties:
+        is_default:
+          type: boolean
+          example: true
+        pokemon:
+          $ref: '#/components/schemas/Pokemon'
+    PokemonSpeciesDex:
+      type: object
+      properties:
+        entry_number:
+          type: integer
+          format: int64
+        pokedex:
+          $ref: '#/components/schemas/Pokedex'
+    GrowthRate:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "slow"
+        formula:
+          type: string
+          example: "y = 5x^3"
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrowthRateExperienceLevel'
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpecies'
+    GrowthRateExperienceLevel:
+      type: object
+      properties:
+        level:
+          type: integer
+          format: int64
+          example: 10
+        experience:
+          type: integer
+          format: int64
+          example: 10
+    MoveLearnMethod:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "level-up"
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    Description:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "level-up"
+        language:
+          $ref: '#/components/schemas/Language'
     PastTypes:
       type: object
       properties:
@@ -153,12 +1084,16 @@ components:
           example: Pikachu
         pokemon:
           $ref: '#/components/schemas/Pokemon'
+        types: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonFormType'
     PokemonFormType:
       type: object
       properties:
         slot: 
           type: integer
-          format: int64
+          format: int32
           example: 1
         type:
           $ref: '#/components/schemas/Type'
@@ -276,19 +1211,29 @@ components:
           example: "https://pokeapi.co/api/v2/ability/132/"
     ApiResponse:
       type: object
+      additionalProperties: false
       properties:
         code:
+          example: 0
           type: integer
           format: int32
         type:
+          example: "error"
           maxLength: 10
           pattern: '^[a-zA-Z0-9]*$'
           type: string
         message:
+          example: "Unexpected error"
           maxLength: 10
           pattern: '^[a-zA-Z0-9]*$'
           type: string
   securitySchemes:
-    regularSecurity:
-      type: http
-      scheme: basic
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          scopes:
+            write: Grants write access
+            read: Grants read access
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token

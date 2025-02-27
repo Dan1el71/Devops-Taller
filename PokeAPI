@@ -227,6 +227,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Name'      
+    MoveDamageClass: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "physical"
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+    Characteristic:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gene_modulo:
+          type: integer
+          format: int64
+        possible_values:
+          type: integer
+          format: int64
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        highest_stat:
+          $ref: '#/components/schemas/Stat'
     PokemonStat:
       type: object
       properties:
@@ -247,6 +282,42 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PokemonHeldItemVersion'
+    PokemonHeldItemVersion:
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/Version'
+        rarity:
+          type: integer
+          format: int64
+    NatureStatAffectSets:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nature'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nature'
+    Nature:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "bold"
+        decreased_stat:
+          $ref: '#/components/schemas/Stat'
+        increased_stat:
+          $ref: '#/components/schemas/Stat'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
     PokemonMove:
       type: object
       properties:
@@ -1188,6 +1259,343 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Type'
+    Move:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "thunderbolt"
+        accuracy:
+          type: integer
+          format: int64
+          example: 100
+        effect_chance:
+          type: integer
+          format: int64
+          example: 10
+        pp:
+          type: integer
+          format: int64
+          example: 10
+        priority:
+          type: integer
+          format: int64
+          example: 10
+        power:
+          type: integer
+          format: int64
+          example: 10
+        contest_combos:
+          $ref: '#/components/schemas/ContestComboSets'
+        contest_type:
+          $ref: '#/components/schemas/ContestType'
+        contest_effect:
+          $ref: '#/components/schemas/ContestEffect'
+        damage_class:
+          $ref: '#/components/schemas/MoveDamageClass'
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerboseEffect'
+        effect_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbilityEffectChange'
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveFlavorText'
+        generation:
+          $ref: '#/components/schemas/Generation'
+        machines:
+          type: array
+          items:
+            $ref: '#/components/schemas/MachineVersionDetail'
+        meta:
+          $ref: '#/components/schemas/MoveMetaData'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        past_values:
+          $ref: '#/components/schemas/PastMoveStatValues'
+        stat_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatChange'
+        super_contest_effect:
+          $ref: '#/components/schemas/SuperContestEffect'
+        target:
+          $ref: '#/components/schemas/MoveTarget'
+        type:
+          $ref: '#/components/schemas/Type'
+    AbilityEffectChange:
+      type: object
+      properties:
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Effect'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    ContestEffect:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        appeal:
+          type: integer
+          format: int64
+          example: 10
+        jam:
+          type: integer
+          format: int64
+          example: 10
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Effect'
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+    ContestType:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "cool"
+        berry_flavor:
+          $ref: '#/components/schemas/BerryFlavor'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+    BerryFlavor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "spicy"
+        contest_type:
+          $ref: '#/components/schemas/ContestType'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+    MoveTarget: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: "normal"
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+        names: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+    SuperContestEffect: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        appeal:
+          type: integer
+          format: int64
+          example: 10
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+    ContestComboSets:
+      type: object
+      properties:
+        normal:
+          $ref: '#/components/schemas/ContestComboDetail'
+        super:
+          $ref: '#/components/schemas/ContestComboDetail'
+    ContestComboDetail:
+      type: object
+      properties:
+        use_before:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+        use_after:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+    MoveStatChange:
+      type: object
+      properties:
+        change:
+          type: integer
+          format: int64
+          example: 10
+        stat:
+          $ref: '#/components/schemas/Stat'
+    PastMoveStatValues:
+      type: object
+      properties:
+        accuracy:
+          type: integer
+          format: int64
+          example: 10
+        effect_chance:
+          type: integer
+          format: int64
+          example: 10
+        power:
+          type: integer
+          format: int64
+          example: 10
+        pp:
+          type: integer
+          format: int64
+          example: 10
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerboseEffect'
+        type:
+          $ref: '#/components/schemas/Type'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    MoveFlavorText: 
+      type: object
+      properties:
+        flavor_text:
+          type: string
+          example: "thunderbolt"
+        language:
+          $ref: '#/components/schemas/Language' 
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    MoveCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "physical"
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+    MoveAilment: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "paralysis"
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+    MoveMetaData:
+      type: object
+      properties:
+        ailment:
+          $ref: '#/components/schemas/MoveAilment'
+        category:
+          $ref: '#/components/schemas/MoveCategory'
+        min_hits:
+          type: integer
+          format: int64
+          example: 10
+        max_hits:
+          type: integer
+          format: int64
+          example: 10
+        min_turns:
+          type: integer
+          format: int64
+          example: 10
+        max_turns:
+          type: integer
+          format: int64
+        drain:
+          type: integer
+          format: int64
+        healing:
+          type: integer
+          format: int64
+        crit_rate:
+          type: integer
+          format: int64
+        ailment_chance:
+          type: integer
+          format: int64
+        flinch_chance:
+          type: integer
+          format: int64
+        stat_chance:
+          type: integer
+          format: int64
+    MachineVersionDetail:
+      type: object
+      properties:
+        machine:
+          $ref: '#/components/schemas/Machine'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
+    Machine: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        item:
+          $ref: '#/components/schemas/Item'
+        move:
+          $ref: '#/components/schemas/Move'
+        version_group:
+          $ref: '#/components/schemas/VersionGroup'
     Abilities:
       type: object
       properties:
